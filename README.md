@@ -21,9 +21,9 @@ ansible --version
 
 *** Coming soon***
 
-## Connection manager API
+## Connection manager API ##### ***Used only the Agentless feature of Datasentinel***
 
-***To be used only on the agentless version of Datasentinel***
+
 
 Only a user with **data admin** profile is authorized to use it
 
