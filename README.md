@@ -19,10 +19,10 @@ ansible --version
 
 ## Activity API
 
-*** Coming soon***
+***Coming soon***
 
-## Connection manager API ##### ***Used only the Agentless feature of Datasentinel***
-
+## Connection manager API 
+##### Use the Agentless feature of Datasentinel
 
 
 Only a user with **data admin** profile is authorized to use it
@@ -43,7 +43,7 @@ ansible-playbook connection_manager.yml -e "datasentinel_password=myUserPassword
 ```
 ## Pool manager
 
-*** Coming soon***
+***Coming soon***
 
 
 
