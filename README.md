@@ -3,8 +3,10 @@
 
 # This toolkit helps you easily use the API
 
-This toolkit is composed of simple ansible playbooks.
+This toolkit is composed of simple ansible playbooks
+
 For simplicity, all variables are defined in the header of each playbook
+
 Ansible is a very popular tool and is installed by default on the Datasentinel platform
 
 Connect as datasentinel on the platform server:
