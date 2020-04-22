@@ -1,38 +1,43 @@
-# The Datasentinel toolkit helps you easily use the API
+![Datasentinel](images/datasentinel-logo.jpg)
 
-- ### Some ansible playbooks are present as examples to help you use API
-- ### ansible is installed and configured on the Datasentinel platform server.
-Connect as datasentinel user.
 
+# This toolkit helps you easily use the API
+
+This toolkit is composed of simple ansible playbooks
+
+For simplicity, all variables are defined in the header of each playbook
+
+Ansible is a very popular tool and is installed by default on the Datasentinel platform
+
+Connect as datasentinel on the platform server:
 ```
 ansible --version
 ```
 
-- ### To use API, you need to authenticate with a user:password.
-- ### User must be created in the UI with a **data admin** or **developer** profile
+To use API, you need to authenticate with a user/password to get a valid access token
 
-## 1. Activity API
 
-## 2. Connection manager 
-Only data admin profile is authorized to use it
+## Documentation
+
+The Datasentinel documentation is available at [doc.datasentinel.io/index.html](https://doc.datasentinel.io/index.html)
+
+
+## Activity API
+
+The API documentation is available at [Activity API documentation](https://doc.datasentinel.io/features/APIs.html)
+
+***Coming soon***
+
+## Connection manager API 
+It uses the Agentless feature of Datasentinel
+
+Only a user with **data admin** profile is authorized to use it
 
 The **connection_manager** playbook creates, updates, enables, disables and finally deletes a connection
-For more simplicity, all connection fields are defined in the header of each playbook
 
 ```
 ansible-playbook connection_manager.yml -e "datasentinel_url=myUrl datasentinel_password=MyDatasentinelPassword pg_password=myPgPassword"```
 
-### ***To be used only with the agentless version***
-Only data admin profile is authorized to use it
+## Pool manager
 
-
-```
-
-```
-## 3 Pool manager
-
-### ***To be used only with the agentless version***
-
-
-
-
+***Coming soon***
