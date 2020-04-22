@@ -20,8 +20,7 @@ The **connection_manager** playbook creates, updates, enables, disables and fina
 For more simplicity, all connection fields are defined in the header of each playbook
 
 ```
-ansible-playbook connection_manager.yml -e "datasentinel_password=myUserPassword"
-```
+ansible-playbook connection_manager.yml -e "datasentinel_url=myUrl datasentinel_password=MyDatasentinelPassword pg_password=myPgPassword"```
 
 ### ***To be used only with the agentless version***
 Only data admin profile is authorized to use it

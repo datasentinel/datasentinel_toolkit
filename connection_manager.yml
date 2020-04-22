@@ -18,7 +18,7 @@
     - block:
         - name: Add a new PostgreSQL connection to Datasentinel
           uri:
-            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instance/{{ pg_name }}"
+            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instances/{{ pg_name }}"
             method: POST
             return_content: yes
             body_format: json
@@ -35,7 +35,7 @@
 
         - name: "Get status connection {{ pg_name }}"
           uri:
-            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instance/{{ pg_name }}"
+            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instances/{{ pg_name }}"
             method: GET
             return_content: yes
             validate_certs: False
@@ -50,7 +50,7 @@
 
         - name: "Update connection {{ pg_name }}"
           uri:
-            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instance/{{ pg_name }}"
+            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instances/{{ pg_name }}"
             method: PUT
             body_format: json
             body:  '{"host":"{{ pg_host }}", "port": {{ pg_port }}, "user":"{{ pg_user }}", "password":"{{ pg_password }}",
@@ -68,7 +68,7 @@
 
         - name: "Disable connection {{ pg_name }}"
           uri:
-            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instance/{{ pg_name }}/disable"
+            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instances/{{ pg_name }}/disable"
             method: PATCH
             return_content: yes
             validate_certs: False
@@ -83,7 +83,7 @@
 
         - name: "Enable connection {{ pg_name }}"
           uri:
-            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instance/{{ pg_name }}/enable"
+            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instances/{{ pg_name }}/enable"
             method: PATCH
             return_content: yes
             validate_certs: False
@@ -98,7 +98,7 @@
 
         - name: "Delete connection {{ pg_name }}"
           uri:
-            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instance/{{ pg_name }}"
+            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instances/{{ pg_name }}"
             method: DELETE
             return_content: yes
             validate_certs: False
