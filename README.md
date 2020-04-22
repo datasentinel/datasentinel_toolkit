@@ -12,7 +12,7 @@ Connect as datasentinel on the platform server:
 ansible --version
 ```
 
-- To use API, you need to authenticate with a user/password to get a valid access token
+To use API, you need to authenticate with a user/password to get a valid access token
 
 
 ## Documentation
