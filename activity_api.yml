@@ -1,0 +1,358 @@
+- name: Retrieve Activity metrics with API
+  hosts: localhost
+  vars:
+  #--------------------------------
+  # Datasentinel platform settings
+  #--------------------------------
+    datasentinel_host: "platform_server"
+    datasentinel_user: "datasentinel"
+    datasentinel_password: "password"
+  #--------------------------------
+  # pg_instance
+  #--------------------------------
+    pg_connection: "pg-crm-1523@pg_12"
+  tasks:
+    - name: Generate variables for Today between 00:00AM and 02:00AM
+      set_fact:
+        from_time: "{{ ansible_date_time.date}} 00:00:00"
+        to_time: "{{ ansible_date_time.date}} 02:00:00"
+      tags: always
+
+    - name: Display time variables
+      debug:
+        msg: "Metrics from '{{ from_time }}' to '{{ to_time }}'"
+      tags: always
+
+    - include_role:
+        name: create_user_token
+      tags: always
+
+    - name: pg-instance-infos
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/pg-instance-infos"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+      tags: always
+
+    - name: "Copy result to pg-instance-infos.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/pg-instance-infos.json"
+      tags: always
+
+    - name: pg-instance
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/pg-instance"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "compute": "summary",
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+      tags: always
+
+    - name: "Copy result to pg-instance.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/pg-instance.json"
+      tags: always
+
+    - name: pg-background
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/pg-background"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "compute": "summary",
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+      tags: background
+
+    - name: "Copy result to pg-background.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/pg-background.json"
+      tags: background
+
+    - name: server
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/server"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "compute": "summary",
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+      tags: server
+
+    - name: "Copy result to server.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/server.json"
+      tags: server
+
+    - name: data-size
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/data-size"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "compute": "summary",
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+      tags: data-size
+
+    - name: "Copy result to data-size.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/data-size.json"
+      tags: data-size
+
+    - name: sessions-workload
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/sessions-workload"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+      tags: sessions
+
+    - name: "Copy result to sessions-workload.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/sessions-workload.json"
+      tags: sessions
+
+    - name: queries-summary
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/queries-summary"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+      tags: queries
+
+    - name: "Copy result to queries-summary.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/queries-summary.json"
+      tags: queries
+
+    - name: top-queries
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/top-queries"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "by": "total_time",
+            "limit": 10,
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+      tags: queries
+
+    - name: "Copy result to top-queries.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/top-queries.json"
+      tags: queries
+
+    - name: Tables access
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/tables"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "by": "heap_blks_hit",
+            "limit": 10,
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+      tags: tables
+
+    - name: "Copy result to tables.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/tables.json"
+      tags: tables
+
+    - name: Indexes access
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/indexes"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "by": "idx_blks_hit",
+            "limit": 10,
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+      tags: indexes
+
+    - name: "Copy result to indexes.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/indexes.json"
+      tags: indexes

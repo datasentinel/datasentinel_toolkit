@@ -1,0 +1,12 @@
+[
+    {
+        "pg_instance": "pg-crm-1523@pg_12",
+        "server": "pg-datasentinel-4112",
+        "start_time": "2020-03-21 14:17:13",
+        "tags": "{\"provider\": \"aws\", \"application\": \"crm\", \"datacenter\": \"lyon\", \"environment\": \"production\"}",
+        "uptime": "36 days 10:42:02",
+        "version": "11.6",
+        "version_full": "PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-39), 64-bit",
+        "wal_size": 1517216416.0
+    }
+]
