@@ -1,3 +1,5 @@
+![Datasentinel](docs/logo-horizontal.png)
+
 # This toolkit helps you easily use the API
 
 ## Documentation
