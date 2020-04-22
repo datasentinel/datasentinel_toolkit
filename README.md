@@ -20,10 +20,11 @@ ansible --version
 ## 1. Activity API
 
 ## 2. Connection manager 
-Only data admin profile is authorized to use it
+Only a user with **data admin** profile is authorized to use it
 
 The **connection_manager** playbook creates, updates, enables, disables and finally deletes a connection
-For more simplicity, all connection fields are defined in the header of each playbook
+
+For simplicity, all variables are defined in the header of each playbook
 
 ```
 ansible-playbook connection_manager.yml -e "datasentinel_password=myUserPassword"
