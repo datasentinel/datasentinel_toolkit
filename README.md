@@ -23,7 +23,7 @@ The Datasentinel documentation is available at [doc.datasentinel.io/index.html](
 
 ## Activity API
 
-The API documentation is available at [Activity API documentation]https://doc.datasentinel.io/features/APIs.html)
+The API documentation is available at [Activity API documentation](https://doc.datasentinel.io/features/APIs.html)
 
 ***Coming soon***
 
