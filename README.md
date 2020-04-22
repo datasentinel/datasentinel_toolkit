@@ -36,7 +36,8 @@ Only a user with **data admin** profile is authorized to use it
 The **connection_manager** playbook creates, updates, enables, disables and finally deletes a connection
 
 ```
-ansible-playbook connection_manager.yml -e "datasentinel_url=myUrl datasentinel_password=MyDatasentinelPassword pg_password=myPgPassword"```
+ansible-playbook connection_manager.yml -e "datasentinel_url=myUrl datasentinel_password=MyDatasentinelPassword pg_password=myPgPassword"
+```
 
 ## Pool manager
 
