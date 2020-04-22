@@ -1,15 +1,18 @@
-# The Datasentinel toolkit helps you easily use the API
+# This toolkit helps you easily use the API
 
-- ### Some ansible playbooks are present as examples to help you use API
-- ### ansible is installed and configured on the Datasentinel platform server.
+## Documentation
+
+The Datasentinel documentation is available at [doc.datasentinel.io/index.html](https://doc.datasentinel.io/index.html).
+
+- Some ansible playbooks are present as examples to help you
+- ansible is installed and configured on the Datasentinel platform server.
 Connect as datasentinel user.
 
 ```
 ansible --version
 ```
 
-- ### To use API, you need to authenticate with a user:password.
-- ### User must be created in the UI with a **data admin** or **developer** profile
+- To use API, you need to authenticate with a user/password to get a valid access token
 
 ## 1. Activity API
 
