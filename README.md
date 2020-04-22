@@ -19,9 +19,11 @@ To use API, you need to authenticate with a user/password to get a valid access 
 
 ## Documentation
 
-The Datasentinel documentation is available at [doc.datasentinel.io/index.html](https://doc.datasentinel.io/index.html).
+The Datasentinel documentation is available at [doc.datasentinel.io/index.html](https://doc.datasentinel.io/index.html)
 
 ## Activity API
+
+The API documentation is available at [Activity API documentation]https://doc.datasentinel.io/features/APIs.html)
 
 ***Coming soon***
 
