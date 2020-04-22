@@ -24,7 +24,7 @@ The Datasentinel documentation is available at [doc.datasentinel.io/index.html](
 ***Coming soon***
 
 ## Connection manager API 
-##### It uses the Agentless feature of Datasentinel
+It uses the Agentless feature of Datasentinel
 
 Only a user with **data admin** profile is authorized to use it
 
