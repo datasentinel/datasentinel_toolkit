@@ -17,9 +17,14 @@ ansible --version
 
 - To use API, you need to authenticate with a user/password to get a valid access token
 
-## 1. Activity API
+## Activity API
 
-## 2. Connection manager 
+*** Coming soon***
+
+## Connection manager API
+
+***To be used only on the agentless version of Datasentinel***
+
 Only a user with **data admin** profile is authorized to use it
 
 The **connection_manager** playbook creates, updates, enables, disables and finally deletes a connection
@@ -31,15 +36,14 @@ ansible-playbook connection_manager.yml -e "datasentinel_password=myUserPassword
 ```
 
 ### ***To be used only with the agentless version***
-Only data admin profile is authorized to use it
 
 
 ```
 
 ```
-## 3 Pool manager
+## Pool manager
 
-### ***To be used only with the agentless version***
+*** Coming soon***
 
 
 
