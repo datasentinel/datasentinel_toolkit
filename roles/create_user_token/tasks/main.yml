@@ -1,6 +1,6 @@
 - name: create an access token
   uri:
-      url: "https://{{ datasentinel_url }}/ds-api/user-token"
+      url: "https://{{ datasentinel_host }}/ds-api/user-token"
       method: GET
       user: "{{ datasentinel_user }}"
       password: "{{ datasentinel_password }}"

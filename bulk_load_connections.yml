@@ -1,0 +1,58 @@
+- name: Load multiple connections
+  hosts: localhost
+  gather_facts: no
+  vars:
+  #--------------------------------
+  # Datasentinel platform settings
+  #--------------------------------
+    datasentinel_host: "platform_server"
+    datasentinel_user: "datasentinel"
+    datasentinel_password: "password"
+  #--------------------------------
+  # Default PostgreSQL settings
+  #--------------------------------
+    pg_port: "9342"
+    pg_user: "datasentinel"
+    pg_password: "password"
+  #--------------------------------
+  # List of connections
+  #--------------------------------
+    pg_connections: 
+      - { pg_name: pg_1, pg_host: pg-rh-2855, pg_tags: "application=rh,datacenter=lille,environment=production,provider=azure" }
+      - { pg_name: pg_2, pg_host: pg-sales-2837, pg_tags: "application=sales,datacenter=paris,environment=production,provider=on-premises" }
+      - { pg_name: pg_3, pg_host: pg-sales-2410, pg_tags: "application=sales,datacenter=lyon,environment=development,provider=on-premises" }
+      - { pg_name: pg_4, pg_host: pg-crm-2357, pg_tags: "application=crm,datacenter=lyon,environment=production,provider=azure" }
+      - { pg_name: pg_5, pg_host: pg-crm-2031, pg_tags: "application=crm,datacenter=lyon,environment=production,provider=aws" }
+      - { pg_name: pg_6, pg_host: pg-crm-1827, pg_tags: "application=crm,datacenter=lyon,environment=development,provider=aws" }
+      - { pg_name: pg_7, pg_host: pg-sales-1155, pg_tags: "application=sales,datacenter=paris,environment=production,provider=azure" }
+      - { pg_name: pg_8, pg_host: pg-sales-0249, pg_tags: "application=sales,datacenter=paris,environment=production,provider=azure" }
+      - { pg_name: pg_9, pg_host: pg-sales-1734, pg_tags: "application=sales,datacenter=lyon,environment=development,provider=on-premises" }
+      - { pg_name: pg_10, pg_host: pg-sales-3420, pg_tags: "application=sales,datacenter=lyon,environment=production,provider=azure" }
+      - { pg_name: pg_11, pg_host: pg-crm-2429, pg_tags: "application=crm,datacenter=lyon,environment=development,provider=aws" }
+      - { pg_name: pg_12, pg_host: pg-crm-1523, pg_tags: "application=crm,datacenter=lyon,environment=production,provider=aws" }
+      - { pg_name: pg_13, pg_host: pg-crm-0926, pg_tags: "application=crm,datacenter=lyon,environment=production,provider=azure" }
+      - { pg_name: pg_14, pg_host: pg-customer-2815, pg_tags: "application=customer,datacenter=lille,environment=development,provider=azure" }
+      - { pg_name: pg_15, pg_host: pg-rh-0109, pg_tags: "application=rh,datacenter=lyon,environment=production,provider=on-premises" }
+  tasks:
+    - include_role:
+        name: create_user_token
+
+    - name: Add new PostgreSQL connections to Datasentinel
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/pool/pg-instances/{{ item.pg_name }}"
+        method: POST
+        return_content: yes
+        body_format: json
+        body: |
+          {
+            "host":"{{ item.pg_host }}",
+            "port": {{ pg_port }},
+            "user":"{{ pg_user }}",
+            "password":"{{ pg_password }}",
+            "tags": "{{ item.pg_tags }}"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      with_items: "{{ pg_connections }}"
