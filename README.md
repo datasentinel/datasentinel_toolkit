@@ -1,9 +1,13 @@
 ![Datasentinel](images/datasentinel-logo.jpg)
 
 
-# This toolkit helps you easily use the API
+# The toolkit helps you easily use the API
 
-This toolkit is composed of simple ansible playbooks
+This toolkit is composed of simple ansible playbooks and bash scripts. It is installed by default in the home directory  
+(/home/datasentinel) of the user **datasentinel** in the centralized platform. 
+
+
+## Ansible examples
 
 For simplicity, all variables are defined in the header of each playbook
 
@@ -29,14 +33,20 @@ The API documentation is available at [Activity API documentation](https://doc.d
 ***Coming soon***
 
 ## Connection manager API 
-It uses the Agentless feature of Datasentinel
+It uses the **Agentless** feature of Datasentinel
 
-Only a user with **data admin** profile is authorized to use it
+Only a user with **data admin** profile and **admin** privilege is authorized to use it
 
 The **connection_manager** playbook creates, updates, enables, disables and finally deletes a connection
 
 ```
-ansible-playbook connection_manager.yml -e "datasentinel_url=myUrl datasentinel_password=MyDatasentinelPassword pg_password=myPgPassword"
+ansible-playbook connection_manager.yml -e "datasentinel_host=myHost datasentinel_password=MyDatasentinelPassword pg_password=myPgPassword"
+```
+
+The **bulk_load_connections** playbook is an example on how to import multiple connections 
+
+```
+ansible-playbook bulk_load_connections.yml -e "datasentinel_host=myHost datasentinel_password=MyDatasentinelPassword pg_password=myPgPassword"
 ```
 
 ## Pool manager

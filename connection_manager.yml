@@ -2,9 +2,15 @@
   hosts: localhost
   gather_facts: no
   vars:
-    datasentinel_url: "platform_server"
+  #--------------------------------
+  # Datasentinel platform settings
+  #--------------------------------
+    datasentinel_host: "platform_server"
     datasentinel_user: "datasentinel"
     datasentinel_password: "password"
+  #--------------------------------
+  # PostgreSQL connection
+  #--------------------------------
     pg_name: "crm-production"
     pg_host: "pg-crm-2031"
     pg_port: 9342
@@ -18,11 +24,18 @@
     - block:
         - name: Add a new PostgreSQL connection to Datasentinel
           uri:
-            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instances/{{ pg_name }}"
+            url: "https://{{ datasentinel_host }}/ds-api/pool/pg-instances/{{ pg_name }}"
             method: POST
             return_content: yes
             body_format: json
-            body:  '{"host":"{{ pg_host }}", "port": {{ pg_port }}, "user":"{{ pg_user }}", "password":"{{ pg_password }}", "tags": "{{ pg_tags }}" }'
+            body:  |
+              {
+                "host":"{{ pg_host }}",
+                "port": {{ pg_port }},
+                "user":"{{ pg_user }}",
+                "password":"{{ pg_password }}",
+                "tags": "{{ pg_tags }}"
+              }
             validate_certs: False
             status_code: 201
             headers:
@@ -35,7 +48,7 @@
 
         - name: "Get status connection {{ pg_name }}"
           uri:
-            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instances/{{ pg_name }}"
+            url: "https://{{ datasentinel_host }}/ds-api/pool/pg-instances/{{ pg_name }}"
             method: GET
             return_content: yes
             validate_certs: False
@@ -50,11 +63,17 @@
 
         - name: "Update connection {{ pg_name }}"
           uri:
-            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instances/{{ pg_name }}"
+            url: "https://{{ datasentinel_host }}/ds-api/pool/pg-instances/{{ pg_name }}"
             method: PUT
             body_format: json
-            body:  '{"host":"{{ pg_host }}", "port": {{ pg_port }}, "user":"{{ pg_user }}", "password":"{{ pg_password }}",
-            "tags": "datacenter=paris,provider=azure,environment=production" }'
+            body:  |
+              {
+                "host":"{{ pg_host }}",
+                "port": {{ pg_port }},
+                "user":"{{ pg_user }}",
+                "password":"{{ pg_password }}",
+                "tags": "datacenter=paris,provider=azure,environment=production"
+              }
             return_content: yes
             validate_certs: False
             status_code: 200
@@ -68,7 +87,7 @@
 
         - name: "Disable connection {{ pg_name }}"
           uri:
-            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instances/{{ pg_name }}/disable"
+            url: "https://{{ datasentinel_host }}/ds-api/pool/pg-instances/{{ pg_name }}/disable"
             method: PATCH
             return_content: yes
             validate_certs: False
@@ -83,7 +102,7 @@
 
         - name: "Enable connection {{ pg_name }}"
           uri:
-            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instances/{{ pg_name }}/enable"
+            url: "https://{{ datasentinel_host }}/ds-api/pool/pg-instances/{{ pg_name }}/enable"
             method: PATCH
             return_content: yes
             validate_certs: False
@@ -98,7 +117,7 @@
 
         - name: "Delete connection {{ pg_name }}"
           uri:
-            url: "https://{{ datasentinel_url }}/ds-api/pool/pg-instances/{{ pg_name }}"
+            url: "https://{{ datasentinel_host }}/ds-api/pool/pg-instances/{{ pg_name }}"
             method: DELETE
             return_content: yes
             validate_certs: False
