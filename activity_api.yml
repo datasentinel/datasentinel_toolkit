@@ -1,0 +1,148 @@
+- name: Retrieve Activity metrics with API
+  hosts: localhost
+  vars:
+  #--------------------------------
+  # Datasentinel platform settings
+  #--------------------------------
+    datasentinel_host: "platform_server"
+    datasentinel_user: "datasentinel"
+    datasentinel_password: "password"
+  #--------------------------------
+  # pg_instance
+  #--------------------------------
+    pg_connection: "pg-crm-1523@pg_12"
+  tasks:
+    - name: Generate variables for Today between 00:00AM and 02:00AM
+      set_fact:
+        from_time: "{{ ansible_date_time.date}} 00:00:00"
+        to_time: "{{ ansible_date_time.date}} 02:00:00"
+
+    - name: Display time variables
+      debug:
+        msg: "Metrics from '{{ from_time }}' to '{{ to_time }}'"
+
+    - include_role:
+        name: create_user_token
+
+    - name: pg-instance-infos
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/pg-instance-infos"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+
+    - name: "Copy result to pg-instance-infos.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/pg-instance-infos.json"
+
+    - name: sessions-workload
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/sessions-workload"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+
+    - name: "Copy result to sessions-workload.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/sessions-workload.json"
+
+    - name: queries-summary
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/queries-summary"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+
+    - name: "Copy result to queries-summary.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/queries-summary.json"
+
+    - name: top-queries
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/top-queries"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+              {
+                "tag": "pg_instance",
+                "value": "{{ pg_connection }}"
+              }
+              ],
+            "by": "total_time",
+            "limit": 10,
+            "output": "json"
+          }
+        validate_certs: False
+        status_code: 201
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+
+    - name: "Copy result to top-queries.json file"
+      copy:
+        content: "{{ response.json | to_nice_json }}"
+        dest: "metrics/top-queries.json"
+
