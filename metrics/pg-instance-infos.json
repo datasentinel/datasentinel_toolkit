@@ -1,0 +1,12 @@
+[
+    {
+        "pg_instance": "pg-crm-1523@pg_12",
+        "server": "pg-datasentinel-4112",
+        "start_time": null,
+        "tags": "{\"application\": \"crm\", \"datacenter\": \"lyon\", \"environment\": \"production\", \"provider\": \"aws\"}",
+        "uptime": null,
+        "version": "11.6",
+        "version_full": null,
+        "wal_size": 1487251632.0
+    }
+]
