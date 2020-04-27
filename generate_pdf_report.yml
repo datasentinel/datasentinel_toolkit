@@ -1,0 +1,68 @@
+- name: Generate a complete workload report in PDF format
+  hosts: localhost
+  vars:
+  #--------------------------------
+  # Datasentinel platform settings
+  #--------------------------------
+    datasentinel_host: "platform_server"
+    datasentinel_user: "datasentinel"
+    datasentinel_password: "password"
+  #--------------------------------
+  # pg_instance
+  #--------------------------------
+    pg_connection: "pg-crm-1523@pg_12"
+  tasks:
+    - name: Generate variables for Today between 00:00AM and 02:00AM
+      set_fact:
+        from_time: "{{ ansible_date_time.date}} 00:00:00"
+        to_time: "{{ ansible_date_time.date}} 02:00:00"
+      tags: always
+
+    - name: Display time variables
+      debug:
+        msg: "Metrics from '{{ from_time }}' to '{{ to_time }}'"
+      tags: always
+
+    - include_role:
+        name: create_user_token
+      tags: always
+
+    - name: Generate PDF
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/activity/workload-report"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+          {
+            "utc_time": false,
+            "from": "{{ from_time }}",
+            "to": "{{ to_time }}",
+            "filters": [
+                {
+                  "tag": "pg_instance",
+                  "value": "{{ pg_connection }}"
+                }
+              ],
+            "sections": [
+                "pg_instance",
+                "top_queries",
+                "top_segments",
+                "data_size",
+                "sessions_workload",
+                "parameters"
+            ]          
+          }
+        validate_certs: False
+        status_code: 200
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+      tags: always
+
+    - name: "Copy result to workload_report.pdf file"
+      copy:
+        content: "{{ response.content }}"
+        dest: "metrics/workload_report.pdf"
+      tags: always
+

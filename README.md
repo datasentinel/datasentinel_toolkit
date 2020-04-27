@@ -39,6 +39,18 @@ Example
 ansible-playbook activity_api.yml  -e "datasentinel_host=myHost datasentinel_password=myPassword" --tags indexes
 ```
 
+## Reporting API
+
+This API allows you to generate a complete workload report in PDF format
+
+The **generate_pdf_report** playbook is an example on how to generate a PDF file
+
+Example
+```
+ansible-playbook generate_pdf_report.yml  -e "datasentinel_host=myHost datasentinel_password=myPassword" --tags indexes
+```
+
+
 ## Connection manager API 
 It uses the **Agentless** feature of Datasentinel
 
