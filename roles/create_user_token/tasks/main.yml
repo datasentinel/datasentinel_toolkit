@@ -9,15 +9,15 @@
       validate_certs: False
       status_code: 200
   register: access_token
-  tags: user_token
+  tags: always
 
 - name: register the token to user_token variable
   set_fact:
     user_token: "{{ access_token['json']['user-token'] }}"
-  tags: user_token
+  tags: always
 
 - name: display the token
   debug:
     var: user_token
-  tags: user_token
+  tags: always
 

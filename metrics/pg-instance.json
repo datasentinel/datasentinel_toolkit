@@ -1,0 +1,21 @@
+[
+    {
+        "blk_read_time": 891.0,
+        "blk_write_time": 21.0,
+        "blks_hit": 20544865.0,
+        "blks_read": 30669.0,
+        "database": "all",
+        "num_backends": 4.329166666666667,
+        "pg_instance": "pg-crm-1523@pg_12",
+        "temp_bytes": 0.0,
+        "temp_files": 0.0,
+        "time": "2020-04-26T22:00:00Z",
+        "tup_deleted": 1221.0,
+        "tup_fetched": 1805728.0,
+        "tup_inserted": 1221.0,
+        "tup_returned": 3321165.0,
+        "tup_updated": 1636275.0,
+        "xact_commit": 1640177.0,
+        "xact_rollback": 724.0
+    }
+]

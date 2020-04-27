@@ -1,0 +1,26 @@
+[
+    {
+        "application": "crm",
+        "data_size": 335041183.0,
+        "database": "crm",
+        "datacenter": "lyon",
+        "environment": "production",
+        "pg_instance": "pg-crm-1523@pg_12",
+        "pg_version": "11.6",
+        "provider": "aws",
+        "server": "pg-datasentinel-4112",
+        "time": "2020-04-26T23:46:08Z"
+    },
+    {
+        "application": "crm",
+        "data_size": 8057503.0,
+        "database": "postgres",
+        "datacenter": "lyon",
+        "environment": "production",
+        "pg_instance": "pg-crm-1523@pg_12",
+        "pg_version": "11.6",
+        "provider": "aws",
+        "server": "pg-datasentinel-4112",
+        "time": "2020-04-26T23:46:08Z"
+    }
+]
