@@ -1,13 +1,13 @@
 - name: create an access token
   uri:
       url: "https://{{ datasentinel_host }}/ds-api/user-token"
-      method: GET
+      method: POST
       user: "{{ datasentinel_user }}"
       password: "{{ datasentinel_password }}"
       return_content: yes
       force_basic_auth: yes
       validate_certs: False
-      status_code: 200
+      status_code: 201
   register: access_token
   tags: always
 
@@ -21,3 +21,17 @@
     var: user_token
   tags: always
 
+- name: Get token  properties
+  uri:
+      url: "https://{{ datasentinel_host }}/ds-api/user-token?token={{ user_token }}"
+      method: GET
+      return_content: yes
+      validate_certs: False
+      status_code: 200
+  register: access_token
+  tags: always
+
+- name: display the token properties
+  debug:
+    var: access_token.json
+  tags: always
