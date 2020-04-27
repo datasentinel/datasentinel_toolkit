@@ -34,6 +34,11 @@ The API documentation is available at [Activity API documentation](https://doc.d
 
 The **activity_api** playbook is an example on how to export activity metrics from Datasentinel 
 
+Example
+```
+ansible-playbook activity_api.yml  -e "datasentinel_host=myHost datasentinel_password=myPassword" --tags indexes
+```
+
 ## Connection manager API 
 It uses the **Agentless** feature of Datasentinel
 
@@ -41,12 +46,14 @@ Only a user with **data admin** profile and **admin** privilege is authorized to
 
 The **connection_manager** playbook creates, updates, enables, disables and finally deletes a connection
 
+Example
 ```
 ansible-playbook connection_manager.yml -e "datasentinel_host=myHost datasentinel_password=MyDatasentinelPassword pg_password=myPgPassword"
 ```
 
 The **bulk_load_connections** playbook is an example on how to import multiple connections 
 
+Example
 ```
 ansible-playbook bulk_load_connections.yml -e "datasentinel_host=myHost datasentinel_password=MyDatasentinelPassword pg_password=myPgPassword"
 ```
