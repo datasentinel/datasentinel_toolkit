@@ -1,8 +1,8 @@
 ![Datasentinel](images/datasentinel-logo.jpg)
 
-### [Datasentinel](https://www.datasentinel.io) is a unique and innovative performance tool for Postgresql
+#### [Datasentinel](https://www.datasentinel.io) is a unique and innovative performance tool for Postgresql
 
-### [Cloud application](https://app.datasentinel.io) (Live demo available)
+#### [Cloud application](https://app.datasentinel.io) (Live demo available)
 
 # The toolkit helps you easily use the API
 
@@ -32,7 +32,7 @@ The Datasentinel documentation is available at [doc.datasentinel.io/index.html](
 
 The API documentation is available at [Activity API documentation](https://doc.datasentinel.io/features/APIs.html)
 
-***Coming soon***
+The **activity_api** playbook is an example on how to export activity metrics from Datasentinel 
 
 ## Connection manager API 
 It uses the **Agentless** feature of Datasentinel
@@ -50,7 +50,3 @@ The **bulk_load_connections** playbook is an example on how to import multiple c
 ```
 ansible-playbook bulk_load_connections.yml -e "datasentinel_host=myHost datasentinel_password=MyDatasentinelPassword pg_password=myPgPassword"
 ```
-
-## Pool manager
-
-***Coming soon***
