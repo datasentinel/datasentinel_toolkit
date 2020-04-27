@@ -4,7 +4,7 @@
 
 #### [Cloud application](https://app.datasentinel.io) (Live demo available)
 
-# The toolkit helps you easily use the API
+## The toolkit helps you easily use the API
 
 This toolkit is composed of simple ansible playbooks and bash scripts. It is installed by default in the home directory  
 (/home/datasentinel) of the user **datasentinel** in the centralized platform. 
