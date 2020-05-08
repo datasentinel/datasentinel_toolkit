@@ -187,11 +187,14 @@ echo "OK"
 echo "$RESPONSE" | python -m json.tool
 }
 
+#------------------------------------------------------------------------------
+#  MAIN
+#------------------------------------------------------------------------------
+
 
 #------------------------------------------------------------------------------
 #  get parametres
 #------------------------------------------------------------------------------
-
 while getopts u:p:d: opt; do
  case $opt in
   u)  DATASENTINEL_USER=$OPTARG;;
@@ -200,8 +203,7 @@ while getopts u:p:d: opt; do
  esac
 done
 
-echo -e "\nDatasentinel toolkit"
-echo "---------------------"
+display "Datasentinel toolkit"
 
 check_python
 check_inputs
