@@ -53,6 +53,17 @@ else:
 EOF
 )"
 
+PYTHON_ERROR_PARSE="$(cat <<EOF
+import sys, json
+resp=json.load(sys.stdin)
+if 'error' in resp: 
+    print(resp['error'])
+    sys.exit(1)
+else:
+    sys.exit(0)
+EOF
+)"
+
 #--------------------------------
 # Datasentinel credentials
 #--------------------------------
@@ -76,7 +87,7 @@ PG_TAGS="datacenter=paris,provider=aws,environment=production"
 # -------------------------------------------------------------------------------------
 display()
 {
-echo -e "\n\n- $1"
+echo -e "\n- $1"
 echo "----------------------------------------------------------------------------------"
 }
 
@@ -124,13 +135,14 @@ then
    echo -e "ERROR: The host $DATASENTINEL_HOST does not ping\n"
    exit 1
 fi
-
-RESPONSE=$(curl -s -k https://51.158.105.50/ds-api/)
+curl -sf -k https://$DATASENTINEL_HOST/ds-api/ >/dev/null 2>&1
 if [ $? -ne 0 ] 
 then
-   echo -e "ERROR: Datasentinel API status on $DATASENTINEL_HOST NOT OK\n"
+   echo -e "ERROR: Datasentinel API KO on server $DATASENTINEL_HOST\n"
    exit 1
 fi
+
+RESPONSE=$(curl -s -k https://$DATASENTINEL_HOST/ds-api/)
 echo "$RESPONSE" | python -m json.tool
 
 }
@@ -173,6 +185,8 @@ cat > $TMP_JSON_FILE <<EOF
 }
 EOF
 
+echo -e "\nDescription"
+echo "-----------"
 cat $TMP_JSON_FILE
 
 RESPONSE=$(curl -sk --header "user-token: $ACCESS_TOKEN" --header 'Content-Type: application/json' -X POST https://$DATASENTINEL_HOST/ds-api/pool/pg-instances/$PG_NAME -d @$TMP_JSON_FILE)
@@ -183,7 +197,110 @@ then
     exit 1
 fi
 
-echo "OK"
+echo -e "\nStatus"
+echo "------"
+echo "$RESPONSE" | python -m json.tool
+}
+
+#----------------------------------------------------------------------
+#  Display status
+#----------------------------------------------------------------------
+display_connection_status() {
+
+display "Display connection status"
+
+RESPONSE=$(curl -sk --header "user-token: $ACCESS_TOKEN" -X GET https://$DATASENTINEL_HOST/ds-api/pool/pg-instances/$PG_NAME)
+STATUS=`echo "$RESPONSE" | python -c "$PYTHON_ERROR_PARSE"`
+if [ $? -ne 0 ]
+then
+    echo -e "\nERROR getting status:\n\n$RESPONSE\n"
+    exit 1
+fi
+
+echo "$RESPONSE" | python -m json.tool
+}
+
+#----------------------------------------------------------------------
+#  Update connection (change tags for example)
+#----------------------------------------------------------------------
+update_connection() {
+
+display "Update connection"
+
+TMP_JSON_FILE=/tmp/connection.json
+
+cat > $TMP_JSON_FILE <<EOF
+{
+  "host": "$PG_HOST",
+  "port": $PG_PORT,
+  "user": "$PG_USER",
+  "password": "$PG_PASSWORD",
+  "tags": "newTag=Tagvalue,$PG_TAGS"
+}
+EOF
+
+RESPONSE=$(curl -sk --header "user-token: $ACCESS_TOKEN" --header 'Content-Type: application/json' -X PUT https://$DATASENTINEL_HOST/ds-api/pool/pg-instances/$PG_NAME -d @$TMP_JSON_FILE)
+STATUS=`echo "$RESPONSE" | python -c "$PYTHON_ERROR_PARSE"`
+if [ $? -ne 0 ]
+then
+    echo -e "\nERROR update connection:\n\n$RESPONSE\n"
+    exit 1
+fi
+
+echo "$RESPONSE" | python -m json.tool
+}
+
+#----------------------------------------------------------------------
+#  Disable connection
+#----------------------------------------------------------------------
+disable_connection() {
+
+display "Disable connection"
+
+RESPONSE=$(curl -sk --header "user-token: $ACCESS_TOKEN" --header 'Content-Type: application/json' -X PATCH https://$DATASENTINEL_HOST/ds-api/pool/pg-instances/$PG_NAME/disable)
+STATUS=`echo "$RESPONSE" | python -c "$PYTHON_ERROR_PARSE"`
+if [ $? -ne 0 ]
+then
+    echo -e "\nERROR disable connection:\n\n$RESPONSE\n"
+    exit 1
+fi
+
+echo "$RESPONSE" | python -m json.tool
+}
+
+#----------------------------------------------------------------------
+#  Enable connection
+#----------------------------------------------------------------------
+enable_connection() {
+
+display "Enable connection"
+
+RESPONSE=$(curl -sk --header "user-token: $ACCESS_TOKEN" --header 'Content-Type: application/json' -X PATCH https://$DATASENTINEL_HOST/ds-api/pool/pg-instances/$PG_NAME/disable)
+STATUS=`echo "$RESPONSE" | python -c "$PYTHON_ERROR_PARSE"`
+if [ $? -ne 0 ]
+then
+    echo -e "\nERROR enable connection:\n\n$RESPONSE\n"
+    exit 1
+fi
+
+echo "$RESPONSE" | python -m json.tool
+}
+
+#----------------------------------------------------------------------
+#  Delete connection
+#----------------------------------------------------------------------
+delete_connection() {
+
+display "Delete connection"
+
+RESPONSE=$(curl -sk --header "user-token: $ACCESS_TOKEN" --header 'Content-Type: application/json' -X DELETE https://$DATASENTINEL_HOST/ds-api/pool/pg-instances/$PG_NAME)
+STATUS=`echo "$RESPONSE" | python -c "$PYTHON_ERROR_PARSE"`
+if [ $? -ne 0 ]
+then
+    echo -e "\nERROR deleting connection:\n\n$RESPONSE\n"
+    exit 1
+fi
+
 echo "$RESPONSE" | python -m json.tool
 }
 
@@ -209,3 +326,8 @@ check_python
 check_inputs
 generate_token
 create_connection
+display_connection_status
+update_connection
+disable_connection
+enable_connection
+delete_connection
