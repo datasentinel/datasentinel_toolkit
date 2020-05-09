@@ -69,3 +69,12 @@ Example
 ```
 ansible-playbook bulk_load_connections.yml -e "datasentinel_host=myHost datasentinel_password=MyDatasentinelPassword pg_password=myPgPassword"
 ```
+
+# Shell scripts
+
+## Connection manager API 
+
+Example
+```
+./connection_manager_api.sh -d datasentinel_server -p password -u user
+```
