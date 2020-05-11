@@ -5,7 +5,7 @@
 # 			Performance monitoring tool for PostgreSQL
 #
 #-------------------------------------------------------------------------------------
-# This script is an example on how to manage PostgreSQL connections with API
+# This script is an example on how to multiple PostgreSQL connections with API
 # It uses the Agentless feature of Datasentinel
 #
 #set -x
@@ -72,14 +72,14 @@ DATASENTINEL_USER="datasentinel"
 DATASENTINEL_PASSWORD=""
 
 #--------------------------------
-# PostgreSQL connection
+# PostgreSQL array of connections
 #--------------------------------
-PG_NAME="crm-production"
-PG_HOST="51.15.246.7"
+PG_CONNECTIONS=("pg_1:pg-rh-2855" "pg_2:pg-sales-2837" "pg_3:pg-sales-2410" "pg_4:pg-crm-2357" "pg_5:pg-crm-2031" "pg_6:pg-crm-1827" "pg_7:pg-sales-1155" "pg_8:pg-sales-0249" "pg_9:pg-sales-1734" "pg_10:pg-sales-3420" "pg_11:pg-crm-2429" "pg_12:pg-crm-1523" "pg_13:pg-crm-0926" "pg_14:pg-customer-2815" "pg_15:pg-rh-0109")
+
 PG_PORT=9342
 PG_USER="datasentinel"
 PG_PASSWORD="sentinel"
-PG_TAGS="datacenter=paris,provider=aws,environment=production"
+PG_TAGS="datacenter=paris,provider=aws"
 
 
 # -------------------------------------------------------------------------------------
@@ -202,107 +202,6 @@ echo "------"
 echo "$RESPONSE" | python -m json.tool
 }
 
-#----------------------------------------------------------------------
-#  Display status
-#----------------------------------------------------------------------
-display_connection_status() {
-
-display "Display connection status"
-
-RESPONSE=$(curl -sk --header "user-token: $ACCESS_TOKEN" -X GET https://$DATASENTINEL_HOST/ds-api/pool/pg-instances/$PG_NAME)
-STATUS=`echo "$RESPONSE" | python -c "$PYTHON_ERROR_PARSE"`
-if [ $? -ne 0 ]
-then
-    echo -e "\nERROR getting status:\n\n$RESPONSE\n"
-    exit 1
-fi
-
-echo "$RESPONSE" | python -m json.tool
-}
-
-#----------------------------------------------------------------------
-#  Update connection (change tags for example)
-#----------------------------------------------------------------------
-update_connection() {
-
-display "Update connection"
-
-TMP_JSON_FILE=/tmp/connection.json
-
-cat > $TMP_JSON_FILE <<EOF
-{
-  "host": "$PG_HOST",
-  "port": $PG_PORT,
-  "user": "$PG_USER",
-  "password": "$PG_PASSWORD",
-  "tags": "newTag=Tagvalue,$PG_TAGS"
-}
-EOF
-
-RESPONSE=$(curl -sk --header "user-token: $ACCESS_TOKEN" --header 'Content-Type: application/json' -X PUT https://$DATASENTINEL_HOST/ds-api/pool/pg-instances/$PG_NAME -d @$TMP_JSON_FILE)
-STATUS=`echo "$RESPONSE" | python -c "$PYTHON_ERROR_PARSE"`
-if [ $? -ne 0 ]
-then
-    echo -e "\nERROR update connection:\n\n$RESPONSE\n"
-    exit 1
-fi
-
-echo "$RESPONSE" | python -m json.tool
-}
-
-#----------------------------------------------------------------------
-#  Disable connection
-#----------------------------------------------------------------------
-disable_connection() {
-
-display "Disable connection"
-
-RESPONSE=$(curl -sk --header "user-token: $ACCESS_TOKEN" --header 'Content-Type: application/json' -X PATCH https://$DATASENTINEL_HOST/ds-api/pool/pg-instances/$PG_NAME/disable)
-STATUS=`echo "$RESPONSE" | python -c "$PYTHON_ERROR_PARSE"`
-if [ $? -ne 0 ]
-then
-    echo -e "\nERROR disable connection:\n\n$RESPONSE\n"
-    exit 1
-fi
-
-echo "$RESPONSE" | python -m json.tool
-}
-
-#----------------------------------------------------------------------
-#  Enable connection
-#----------------------------------------------------------------------
-enable_connection() {
-
-display "Enable connection"
-
-RESPONSE=$(curl -sk --header "user-token: $ACCESS_TOKEN" --header 'Content-Type: application/json' -X PATCH https://$DATASENTINEL_HOST/ds-api/pool/pg-instances/$PG_NAME/disable)
-STATUS=`echo "$RESPONSE" | python -c "$PYTHON_ERROR_PARSE"`
-if [ $? -ne 0 ]
-then
-    echo -e "\nERROR enable connection:\n\n$RESPONSE\n"
-    exit 1
-fi
-
-echo "$RESPONSE" | python -m json.tool
-}
-
-#----------------------------------------------------------------------
-#  Delete connection
-#----------------------------------------------------------------------
-delete_connection() {
-
-display "Delete connection"
-
-RESPONSE=$(curl -sk --header "user-token: $ACCESS_TOKEN" --header 'Content-Type: application/json' -X DELETE https://$DATASENTINEL_HOST/ds-api/pool/pg-instances/$PG_NAME)
-STATUS=`echo "$RESPONSE" | python -c "$PYTHON_ERROR_PARSE"`
-if [ $? -ne 0 ]
-then
-    echo -e "\nERROR deleting connection:\n\n$RESPONSE\n"
-    exit 1
-fi
-
-echo "$RESPONSE" | python -m json.tool
-}
 
 #------------------------------------------------------------------------------
 #  MAIN
@@ -324,9 +223,9 @@ display "Datasentinel toolkit"
 check_python
 check_inputs
 generate_token
+for line in "${PG_CONNECTIONS[@]}"
+do
+PG_NAME=`echo $line | cut -d':' -f1` 
+PG_HOST=`echo $line | cut -d':' -f2`
 create_connection
-display_connection_status
-update_connection
-disable_connection
-enable_connection
-delete_connection
+done
