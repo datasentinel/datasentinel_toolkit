@@ -79,7 +79,7 @@ PG_CONNECTIONS=("pg_1:pg-rh-2855" "pg_2:pg-sales-2837" "pg_3:pg-sales-2410" "pg_
 PG_PORT=9342
 PG_USER="datasentinel"
 PG_PASSWORD="sentinel"
-PG_TAGS="datacenter=paris,provider=aws"
+PG_TAGS="datacenter=paris,provider=on-premises"
 
 
 # -------------------------------------------------------------------------------------
@@ -223,9 +223,15 @@ display "Datasentinel toolkit"
 check_python
 check_inputs
 generate_token
+for i in {1..30}
+do
+echo $i
 for line in "${PG_CONNECTIONS[@]}"
 do
-PG_NAME=`echo $line | cut -d':' -f1` 
+PG_NAME=`echo $line | cut -d':' -f1`
+PG_NAME="${i}_$PG_NAME" 
 PG_HOST=`echo $line | cut -d':' -f2`
+echo $PG_NAME
 create_connection
+done
 done

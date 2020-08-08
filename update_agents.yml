@@ -1,0 +1,111 @@
+- name: Update agents with new version
+  #---------------------------------------------------
+  # Playbook used to update agents with a new version
+  # The configuration of each agent is kept
+  #---------------------------------------------------
+  hosts: all
+  gather_facts: yes
+  vars:
+    local_dir: "/datasentinel/download"
+    remote_dir: "/var/lib/pgsql"
+    agent_remote_dir: "{{ remote_dir }}/datasentinel"
+    agent_compressed_file: "datasentinel-agent-rhel7.tar.gz"
+    agent_remote_port: 8282
+  tasks:
+
+    - name: Centos, Red hat, fedora
+      set_fact:
+        os_type: "centos"
+        remote_dir: "/var/lib/pgsql"
+        agent_remote_dir: "{{ remote_dir }}/datasentinel"
+        agent_compressed_file: "datasentinel-agent-rhel{{ ansible_distribution_major_version }}.tar.gz"
+      when: ("CentOS" == ansible_distribution) or ("Fedora" == ansible_distribution) or  ("Red Hat Eenterprise Linux" == ansible_distribution) 
+
+    - name: Ubuntu, Debian
+      set_fact:
+        os_type: "debian"
+        remote_dir: "/var/lib/postgres"
+        agent_remote_dir: "{{ remote_dir }}/datasentinel"
+      when: ("Debian" == ansible_distribution) or ("Ubuntu" == ansible_distribution)
+
+    - name: Test os types
+      fail:
+        msg: "Incorrect os_type : {{ os_type }} , must be centos or debian"
+      when: 
+        - os_type != 'centos'
+        - os_type != 'debian'
+
+    - name: Change agent compressed file name for debian jessie
+      set_fact:
+        agent_compressed_file: "datasentinel-agent-debian-jessie.tar.gz"
+      when: 
+        - os_type == 'debian'
+        - ansible_distribution_major_version == 8
+
+    - name: Change agent compressed file name for debian stretch
+      set_fact:
+        agent_compressed_file: "datasentinel-agent-debian-stretch.tar.gz"
+      when: 
+        - os_type == 'debian'
+        - ansible_distribution_major_version == 9
+
+    - name: Change agent compressed file name for debian buster
+      set_fact:
+        agent_compressed_file: "datasentinel-agent-debian-buster.tar.gz"
+      when: 
+        - os_type == 'debian'
+        - ansible_distribution_major_version == 10
+
+    - name: stop the agent
+      shell: "datasentinel stop agent"
+      environment:
+        LD_LIBRARY_PATH: "{{agent_remote_dir}}/lib"
+        PATH: "{{ agent_remote_dir }}:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/bin" 
+      ignore_errors: true
+      become: yes
+      become_user: postgres
+
+    - name: remove datasentinel dir
+      file:
+        path: "{{ agent_remote_dir }}"
+        state: absent
+
+    - name: uncompress agent tar.gz file
+      unarchive:
+        src: "{{ local_dir }}/{{ agent_compressed_file }}"
+        dest: "{{ remote_dir }}"
+        mode: 0755
+      become: yes
+      become_user: postgres
+
+    - name: start the agent 
+      shell: "datasentinel start agent"
+      args:
+        executable: /bin/bash
+      environment:
+        LD_LIBRARY_PATH: "{{ agent_remote_dir }}/lib"
+        PATH: "{{ agent_remote_dir }}:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/bin" 
+      become: yes
+      become_user: postgres
+
+    - name: Wait for agent to be started
+      wait_for:
+        host: "{{ inventory_hostname }}"
+        port: "{{ agent_remote_port }}"
+        delay: 5
+        connect_timeout: 5
+        timeout: 60
+
+    - name: Get agent status
+      uri:
+        url: "https://{{ inventory_hostname }}:8282/api/agent/status"
+        method: GET
+        status_code: 200
+        body_format: json
+        return_content: yes
+        validate_certs: False
+      register: agent_status
+
+    - name: Display agent version
+      debug:
+        var: agent_status.json.version

@@ -21,7 +21,18 @@ Connect as datasentinel on the platform server:
 ansible --version
 ```
 
-To use API, you need to authenticate with a user/password to get a valid access token
+## Update agents
+
+The **update_agents.yml** playbook is an example on how to update deployed agents with a new version 
+
+You need to download new versions and put them in the directory /datasentinel/download (**local_dir** variable)
+
+Example
+```
+ansible-playbook update_agents.yml -i hosts
+```
+
+## To use API, you need to authenticate with a user/password to get a valid access token
 
 
 ## Documentation
