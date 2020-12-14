@@ -89,3 +89,10 @@ Example
 ```
 ./connection_manager_api.sh -d datasentinel_server -p password -u user
 ```
+
+## Workload export as PDF 
+
+Example
+```
+./generate_pdf_report.sh -d datasentinel_server -p password -u user
+```
