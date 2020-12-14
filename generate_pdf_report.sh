@@ -148,7 +148,7 @@ generate_token() {
 
 display "Generate an access token"
 
-RESPONSE=$(  $DATASENTINEL_USER:$DATASENTINEL_PASSWORD -X POST https://$DATASENTINEL_HOST/ds-api/user-token)
+RESPONSE=$(curl -sku  $DATASENTINEL_USER:$DATASENTINEL_PASSWORD -X POST https://$DATASENTINEL_HOST/ds-api/user-token)
 ACCESS_TOKEN=`echo "$RESPONSE" | python -c "$PYTHON_TOKEN_PARSE"`
 if [ $? -ne 0 ]
 then
