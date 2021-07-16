@@ -1,0 +1,262 @@
+- name: Manage Roles and Users with the API
+  hosts: localhost
+  gather_facts: no
+  vars:
+  #--------------------------------
+  # Datasentinel platform settings
+  #--------------------------------
+    datasentinel_host: "platform_server"
+    datasentinel_user: "datasentinel"
+    datasentinel_password: "password"
+  #--------------------------------
+  # Role and User properties
+  #--------------------------------
+    role_name: "MyNewRole"
+    user_email_all_properties: "stephane.jambut@sfr.fr"
+    user_email_no_property: "alex-jambut.partie@sfr.fr"
+  tasks:
+    - include_role:
+        name: create_user_token
+
+    - block:
+        - name: "Create a Role"
+          uri:
+            url: "https://{{ datasentinel_host }}/ds-api/roles/{{ role_name }}"
+            method: POST
+            return_content: yes
+            body_format: json
+            body:  |
+                {
+                  "access": [
+                        {
+                            "filters": [
+                                {
+                                    "tag": "datacenter",
+                                    "value": "paris"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            validate_certs: False
+            status_code: 201, 409
+            headers:
+                user-token: "{{ user_token }}"
+          register: response
+          tags: always
+
+        - debug:
+            var: response.json
+
+        - name: "Display the Role"
+          uri:
+            url: "https://{{ datasentinel_host }}/ds-api/roles/{{ role_name }}"
+            method: GET
+            return_content: yes
+            validate_certs: False
+            status_code: 200
+            headers:
+                user-token: "{{ user_token }}"
+          register: response
+
+        - name: display Role
+          debug:
+            var: response.json
+
+        - name: "Update the Role"
+          uri:
+            url: "https://{{ datasentinel_host }}/ds-api/roles/{{ role_name }}"
+            method: PUT
+            return_content: yes
+            body_format: json
+            body:  |
+                {
+                  "access": [
+                        {
+                            "filters": [
+                                {
+                                    "tag": "provider",
+                                    "value": "aws"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            validate_certs: False
+            status_code: 200
+            headers:
+                user-token: "{{ user_token }}"
+          register: response
+
+        - name: display Role
+          debug:
+            var: response.json
+
+        - name: "Display all Roles"
+          uri:
+            url: "https://{{ datasentinel_host }}/ds-api/roles"
+            method: GET
+            return_content: yes
+            validate_certs: False
+            status_code: 200
+            headers:
+                user-token: "{{ user_token }}"
+          register: response
+
+        - name: display Roles
+          debug:
+            var: response.json
+
+        - name: "Create a User with all properties"
+          uri:
+            url: "https://{{ datasentinel_host }}/ds-api/users/{{ user_email_all_properties }}"
+            method: POST
+            return_content: yes
+            body_format: json
+            body:  |
+                {
+                  "password": "myPassword",
+                  "privilege": "admin",
+                  "profile": "data admin",
+                  "live_360": 1,
+                  "role": "{{ role_name }}"
+                }
+            validate_certs: False
+            status_code: 201,409
+            headers:
+                user-token: "{{ user_token }}"
+          register: response
+          tags: always
+
+        - debug:
+            var: response.json
+
+        - name: "Create a User without property"
+          uri:
+            url: "https://{{ datasentinel_host }}/ds-api/users/{{ user_email_no_property }}"
+            method: POST
+            return_content: yes
+            body_format: json
+            body:  |
+                {
+                  "password": "myPassword"
+                }
+            validate_certs: False
+            status_code: 201,409
+            headers:
+                user-token: "{{ user_token }}"
+          register: response
+          tags: always
+
+        - debug:
+            var: response.json
+
+        - name: "Display User {{ user_email_no_property }}"
+          uri:
+            url: "https://{{ datasentinel_host }}/ds-api/users/{{ user_email_no_property }}"
+            method: GET
+            return_content: yes
+            validate_certs: False
+            status_code: 200
+            headers:
+                user-token: "{{ user_token }}"
+          register: response
+
+        - name: Display user
+          debug:
+            var: response.json
+
+        - name: "Display User {{ user_email_all_properties }}"
+          uri:
+            url: "https://{{ datasentinel_host }}/ds-api/users/{{ user_email_all_properties }}"
+            method: GET
+            return_content: yes
+            validate_certs: False
+            status_code: 200
+            headers:
+                user-token: "{{ user_token }}"
+          register: response
+
+        - name: display User
+          debug:
+            var: response.json
+
+        - name: "Display all Users"
+          uri:
+            url: "https://{{ datasentinel_host }}/ds-api/users"
+            method: GET
+            return_content: yes
+            validate_certs: False
+            status_code: 200
+            headers:
+                user-token: "{{ user_token }}"
+          register: response
+
+        - name: Display users
+          debug:
+            var: response.json
+
+        - name: "Delete role {{ role_name }} - raises an error because a user has the role assigned"
+          uri:
+            url: "https://{{ datasentinel_host }}/ds-api/roles/{{ role_name }}"
+            method: DELETE
+            return_content: yes
+            validate_certs: False
+            status_code: 400
+            headers:
+                user-token: "{{ user_token }}"
+          register: response
+
+        - name: Delete role status
+          debug:
+            var: response.json
+
+        - name: "Delete user {{ user_email_all_properties }}"
+          uri:
+            url: "https://{{ datasentinel_host }}/ds-api/users/{{ user_email_all_properties }}"
+            method: DELETE
+            return_content: yes
+            validate_certs: False
+            status_code: 200
+            headers:
+                user-token: "{{ user_token }}"
+          register: response
+
+        - name: Delete user status
+          debug:
+            var: response.json
+
+        - name: "Delete user {{ user_email_no_property }}"
+          uri:
+            url: "https://{{ datasentinel_host }}/ds-api/users/{{ user_email_no_property }}"
+            method: DELETE
+            return_content: yes
+            validate_certs: False
+            status_code: 200
+            headers:
+                user-token: "{{ user_token }}"
+          register: response
+
+        - name: Delete user status
+          debug:
+            var: response.json
+
+        - name: "Delete role {{ role_name }}"
+          uri:
+            url: "https://{{ datasentinel_host }}/ds-api/roles/{{ role_name }}"
+            method: DELETE
+            return_content: yes
+            validate_certs: False
+            status_code: 200
+            headers:
+                user-token: "{{ user_token }}"
+          register: response
+
+        - name: Delete role status
+          debug:
+            var: response.json
+
+      rescue:
+        - name: Error managing user and roles
+          debug:
+            var: response.json
