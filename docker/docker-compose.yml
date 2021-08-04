@@ -1,0 +1,44 @@
+version: '2.2'
+services:
+  nginx:
+    image: datasentinel-nginx
+    container_name: datasentinel-nginx
+    restart: always
+    networks:
+        - datasentinel
+    ports:
+        - 8080:80
+        - 4443:443
+  postgresql:
+    image: datasentinel-postgres
+    container_name: datasentinel-postgres
+    restart: always
+    networks:
+        - datasentinel
+  grafana:
+    image: datasentinel-grafana
+    container_name: datasentinel-grafana
+    networks:
+        - datasentinel
+    depends_on:
+      postgresql:
+        condition: service_started
+    restart: always
+  influxdb:
+    image: datasentinel-influxdb
+    container_name: datasentinel-influxdb
+    restart: always
+    networks:
+        - datasentinel
+  backend:
+    image: datasentinel-backend
+    container_name: datasentinel-backend
+    depends_on:
+      influxdb:
+        condition: service_started
+    networks:
+        - datasentinel
+    restart: always
+networks:
+    datasentinel:
+        driver: bridge
