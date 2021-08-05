@@ -1,4 +1,7 @@
 version: '2.2'
+volumes:
+  pg_data:
+  influx_data:
 services:
   nginx:
     image: datasentinel-nginx
@@ -15,6 +18,8 @@ services:
     restart: always
     networks:
         - datasentinel
+    volumes:
+        - pg_data:/var/lib/postgresql/data
   grafana:
     image: datasentinel-grafana
     container_name: datasentinel-grafana
@@ -30,6 +35,8 @@ services:
     restart: always
     networks:
         - datasentinel
+    volumes:
+        - influx_data:/var/lib/influxdb
   backend:
     image: datasentinel-backend
     container_name: datasentinel-backend
