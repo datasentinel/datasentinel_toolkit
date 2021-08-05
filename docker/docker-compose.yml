@@ -4,7 +4,7 @@ volumes:
   influx_data:
 services:
   nginx:
-    image: datasentinel-nginx
+    image: datasentinel/datasentinel-nginx
     container_name: datasentinel-nginx
     restart: always
     networks:
@@ -13,7 +13,7 @@ services:
         - 8080:80
         - 4443:443
   postgresql:
-    image: datasentinel-postgres
+    image: datasentinel/datasentinel-postgres
     container_name: datasentinel-postgres
     restart: always
     networks:
@@ -21,7 +21,7 @@ services:
     volumes:
         - pg_data:/var/lib/postgresql/data
   grafana:
-    image: datasentinel-grafana
+    image: datasentinel/datasentinel-grafana
     container_name: datasentinel-grafana
     networks:
         - datasentinel
@@ -30,7 +30,7 @@ services:
         condition: service_started
     restart: always
   influxdb:
-    image: datasentinel-influxdb
+    image: datasentinel/datasentinel-influxdb
     container_name: datasentinel-influxdb
     restart: always
     networks:
@@ -38,7 +38,7 @@ services:
     volumes:
         - influx_data:/var/lib/influxdb
   backend:
-    image: datasentinel-backend
+    image: datasentinel/datasentinel-backend
     container_name: datasentinel-backend
     depends_on:
       influxdb:
