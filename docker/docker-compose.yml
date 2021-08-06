@@ -3,17 +3,8 @@ volumes:
   pg_data:
   influx_data:
 services:
-  nginx:
-    image: datasentinel/datasentinel-nginx
-    container_name: datasentinel-nginx
-    restart: always
-    networks:
-        - datasentinel
-    ports:
-        - 80:80
-        - 443:443
   postgresql:
-    image: datasentinel/datasentinel-postgres
+    image: datasentinel-postgres
     container_name: datasentinel-postgres
     restart: always
     networks:
@@ -21,7 +12,7 @@ services:
     volumes:
         - pg_data:/var/lib/postgresql/data
   grafana:
-    image: datasentinel/datasentinel-grafana
+    image: datasentinel-grafana
     container_name: datasentinel-grafana
     networks:
         - datasentinel
@@ -30,7 +21,7 @@ services:
         condition: service_started
     restart: always
   influxdb:
-    image: datasentinel/datasentinel-influxdb
+    image: datasentinel-influxdb
     container_name: datasentinel-influxdb
     restart: always
     networks:
@@ -38,7 +29,7 @@ services:
     volumes:
         - influx_data:/var/lib/influxdb
   backend:
-    image: datasentinel/datasentinel-backend
+    image: datasentinel-backend
     container_name: datasentinel-backend
     depends_on:
       influxdb:
@@ -46,6 +37,20 @@ services:
     networks:
         - datasentinel
     restart: always
+  nginx:
+    image: datasentinel-nginx
+    container_name: datasentinel-nginx
+    depends_on:
+      backend:
+        condition: service_started
+      grafana:
+        condition: service_started
+    restart: always
+    networks:
+        - datasentinel
+    ports:
+        - 80:80
+        - 443:443
 networks:
     datasentinel:
         driver: bridge
