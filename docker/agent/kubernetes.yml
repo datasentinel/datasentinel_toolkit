@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datasentinel-agent
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      bb: agent
+  template:
+    metadata:
+      labels:
+        bb: agent
+    spec:
+      containers:
+      - name: datasentinel-agent
+        image: datasentinel/datasentinel-agent:latest
+        imagePullPolicy: Always
+        env:
+          - name: DATASENTINEL_AGENT_HOST
+            value: localhost
+          - name: DATASENTINEL_AGENT_PORT
+            value: '8383'
+        ports:
+          - containerPort: 8383
+        volumeMounts:
+          - mountPath: /agent/config
+            name: agent-config-volume
+      volumes:
+        - name: agent-config-volume
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: datasentinel-agent
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    bb: datasentinel
+  ports:
+  - protocol: TCP
+    port: 8383
+    targetPort: 8383
+    nodePort: 31383

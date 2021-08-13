@@ -5,7 +5,7 @@
 # 			Performance monitoring tool for PostgreSQL
 #
 #-------------------------------------------------------------------------------------
-# This script is an example on how to use the agent with docker 
+# This script is an example on how to use the agent within Docker 
 #
 # 
 # The Postgres cluster used in this example is preconfigured with pg_stats_statements, pg_store_plans and datasentinel extensions installed.

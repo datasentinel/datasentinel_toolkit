@@ -1,0 +1,13 @@
+version: '2.2'
+volumes:
+  agent-config:
+services:
+  agent:
+    image: datasentinel/datasentinel-agent
+    container_name: datasentinel-agent
+    restart: always
+    ports:
+        - 8383:8383
+    environment:
+      - DATASENTINEL_AGENT_HOST=$HOSTNAME
+      - DATASENTINEL_AGENT_PORT=8383
