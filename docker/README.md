@@ -11,7 +11,7 @@ docker-compose up
 
 <br>
 
-By default ports 443 and 80 are exposed. You can customize the exposed ports.
+By default ports 4443 and 8080 are exposed. You can customize the exposed ports.
 
 To connectto the UI, user ***datasentinel*** password ***datasentinel***
 
