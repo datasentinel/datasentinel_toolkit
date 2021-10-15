@@ -1,47 +1,43 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: datasentinel-agent
   namespace: default
 spec:
-  replicas: 1
+  serviceName: datasentinel-agent-service
   selector:
     matchLabels:
-      bb: agent
+      app: datasentinel-agent
+  replicas: 1
   template:
     metadata:
       labels:
-        bb: agent
+        app: datasentinel-agent
     spec:
+      securityContext:
+          fsGroup: 2000
+          runAsNonRoot: true
+          runAsUser: 1001
       containers:
       - name: datasentinel-agent
         image: datasentinel/datasentinel-agent:latest
         imagePullPolicy: Always
         env:
           - name: DATASENTINEL_AGENT_HOST
-            value: localhost
+            value: LOADBALANCER_IP
           - name: DATASENTINEL_AGENT_PORT
-            value: '8383'
+            value: '8384'
         ports:
-          - containerPort: 8383
+          - containerPort: 8384
         volumeMounts:
-          - mountPath: /agent/config
-            name: agent-config-volume
-      volumes:
-        - name: agent-config-volume
-          emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: datasentinel-agent
-  namespace: default
-spec:
-  type: NodePort
-  selector:
-    bb: datasentinel
-  ports:
-  - protocol: TCP
-    port: 8383
-    targetPort: 8383
-    nodePort: 31383
+          - name: datasentinel-agent-config-volume
+            mountPath: /agent/config
+            readOnly: false
+  volumeClaimTemplates:
+    - metadata:
+        name: datasentinel-agent-config-volume
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
