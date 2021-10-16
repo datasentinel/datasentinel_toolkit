@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: datasentinel-platform
+  namespace: default
+spec:
+  serviceName: datasentinel-platform-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: datasentinel
+  template:
+    metadata:
+      labels:
+        app: datasentinel
+    spec:
+      containers:
+      - name: datasentinel-nginx
+        image: datasentinel/datasentinel-nginx-k8s:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 443
+          protocol: TCP
+      - name: datasentinel-postgres
+        image: datasentinel/datasentinel-postgres-k8s:latest
+        imagePullPolicy: Always
+        volumeMounts:
+          - name: pg-data
+            mountPath: /data
+        env:
+          - name: PGDATA
+            value: /data/pgdata
+      - name: datasentinel-influxdb
+        image: datasentinel/datasentinel-influxdb-k8s:latest
+        imagePullPolicy: Always
+        volumeMounts:
+          - mountPath: /var/lib/influxdb
+            name: influx-data
+      - name: datasentinel-grafana
+        image: datasentinel/datasentinel-grafana-k8s:latest
+        imagePullPolicy: Always
+      - name: datasentinel-backend
+        image: datasentinel/datasentinel-backend-k8s:latest
+        imagePullPolicy: Always
+  volumeClaimTemplates:
+    - metadata:
+        name: pg-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
+    - metadata:
+        name: influx-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: datasentinel-platform
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: datasentinel
+  ports:
+  - protocol: TCP
+    port: 30443
+    targetPort: 443
