@@ -1,4 +1,4 @@
-- name: Generate a complete workload report in PDF format
+- name: Example on how to generate reports in PDF format
   hosts: localhost
   vars:
   #--------------------------------
@@ -29,7 +29,7 @@
 
     - name: Generate PDF
       uri:
-        url: "https://{{ datasentinel_host }}/ds-api/activity/workload-report"
+        url: "https://{{ datasentinel_host }}/ds-api/activity/full-report"
         method: POST
         return_content: yes
         body_format: json
@@ -60,9 +60,9 @@
       register: response
       tags: always
 
-    - name: "Copy result to workload_report.pdf file"
+    - name: "Copy result to full_report.pdf file"
       copy:
         content: "{{ response.content }}"
-        dest: "metrics/workload_report.pdf"
+        dest: "metrics/full_report.pdf"
       tags: always
 

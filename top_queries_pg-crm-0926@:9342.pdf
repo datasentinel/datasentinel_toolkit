@@ -1,0 +1,6 @@
+{
+  "type": "about:blank",
+  "title": "Bad Request",
+  "detail": "Request body is not valid JSON",
+  "status": 400
+}

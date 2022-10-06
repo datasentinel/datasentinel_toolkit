@@ -137,10 +137,10 @@ Example
 ```
 <br>
 
-## Workload export as PDF 
+## Top queries report 
 <hr>
 
 Example
 ```
-./generate_pdf_report.sh -d datasentinel_server -p password -u user
+./top_queries_report.sh -d datasentinel_server -p password -u user
 ```
