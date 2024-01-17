@@ -2,8 +2,6 @@
 
 #### [Datasentinel](https://www.datasentinel.io) is a unique and innovative performance tool for Postgresql
 
-#### See our [Live Demo](https://demo.datasentinel.io)
-
 
 <br>
 
