@@ -1,0 +1,124 @@
+- name: Add User authenticated by LDAP (grafana allow_sign_up = false)
+  hosts: localhost
+  gather_facts: no
+  vars:
+  #--------------------------------
+  # Datasentinel platform settings
+  #--------------------------------
+    datasentinel_host: "platform_server"
+    datasentinel_user: "datasentinel"
+    datasentinel_password: "password"
+  #--------------------------------
+  # grafana settings
+  #--------------------------------
+    grafana_admin: "admin"
+    grafana_admin_password: "password"
+  #--------------------------------
+  # User properties
+  #--------------------------------
+    application_user_email: "stephane.jambut@sfr.fr"
+    application_user_login: "sjambut"
+    application_user_password: "sjambut"
+  tasks:
+    - name: "Create Grafana User"
+      uri:
+        url: "https://{{ datasentinel_host }}/api/admin/users"
+        user: "{{ grafana_admin }}"
+        password: "{{ grafana_admin_password }}"
+        force_basic_auth: true
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+            {
+              "name" : "{{ application_user_login }}",
+              "login" : "{{ application_user_login }}",
+              "email" : "{{ application_user_email }}",
+              "password": "{{ application_user_password }}"
+            }
+        validate_certs: False
+        status_code: 200
+      register: response
+      tags: always
+
+    - debug:
+        var: response.json
+
+    - set_fact:
+        user_id: "{{ response.json.id }}"
+
+    - debug:
+        var: user_id        
+
+    - name: "Delete Default Grafana organization for User {{ user_id}}"
+      uri:
+        url: "https://{{ datasentinel_host }}/api/orgs/1/users/{{ user_id}}"
+        user: "{{ grafana_admin }}"
+        password: "{{ grafana_admin_password }}"
+        force_basic_auth: true
+        method: DELETE
+        return_content: yes
+        validate_certs: False
+        status_code: 200
+      register: response
+      tags: always
+
+    - name: "Assign Grafana organization 2 (Datasentinel) to User {{ user_id}}"
+      uri:
+        url: "https://{{ datasentinel_host }}/api/orgs/2/users"
+        user: "{{ grafana_admin }}"
+        password: "{{ grafana_admin_password }}"
+        force_basic_auth: true
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+            {'loginOrEmail': "{{ application_user_email }}",
+             'role': 'Viewer'}
+        validate_certs: False
+        status_code: 200
+      register: response
+      tags: always
+
+    - debug:
+        var: response.json
+
+    # - name: "Delete Grafana User"
+    #   uri:
+    #     url: "https://{{ datasentinel_host }}/api/admin/users/{{ user_id}}"
+    #     user: "{{ grafana_admin }}"
+    #     password: "{{ grafana_admin_password }}"
+    #     force_basic_auth: true
+    #     method: DELETE
+    #     return_content: yes
+    #     validate_certs: False
+    #     status_code: 200
+    #   register: response
+    #   tags: always
+
+    - include_role:
+        name: create_user_token
+
+    - name: "Create Datasentinel LDAP User with privileges"
+      uri:
+        url: "https://{{ datasentinel_host }}/ds-api/users/{{ application_user_email }}"
+        method: POST
+        return_content: yes
+        body_format: json
+        body:  |
+            {
+              "ldap": true,
+              "privilege": "admin",
+              "profile": "data admin",
+              "live_360": 1,
+              "role": "No restriction"
+            }
+        validate_certs: False
+        status_code: 201,409
+        headers:
+            user-token: "{{ user_token }}"
+      register: response
+      tags: always
+
+    - debug:
+        var: response.json
